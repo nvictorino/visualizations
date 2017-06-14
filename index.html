@@ -2,19 +2,21 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta content="utf-8" http-equiv="encoding">
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="robots" content="noindex,nofollow">
   <meta name="googlebot" content="noindex,nofollow">
   <script type="text/javascript" src="//d3js.org/d3.v3.js"></script>
     <link rel="stylesheet" type="text/css" href="/css/result-light.css"> 
-      <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
-      <script type="text/javascript" src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+      <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+      <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
       <script src="bootstrap.tooltip.js"></script>
       <script src="bootstrap.popover.js"></script>
       <script src="d3.layout.chord.sort.js"></script>
       <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
   <style type="text/css">
  pre {
     display:none;
@@ -24,6 +26,8 @@ body {
     color: #333;
     width: 100%;
     font-family: 'Roboto',sans-serif;
+}
+.container {
 }
 .about_text {
     float:right;
@@ -198,6 +202,35 @@ svg {
     width:1400px !important;
 }
 
+
+p {
+  font-family: Helvetica;
+}
+.d3-tip {
+  line-height: 1;
+  padding: 6px;
+  background: white;
+  border-radius: 1px solid black;
+  font-size: 12px;
+}
+        .textbox path {
+                stroke: steelblue;
+                stroke-width: 1;
+                fill: none;
+            }
+
+div.tooltip2 {
+    background: #fff;
+    border: 1px solid black;
+    position: absolute;
+    color: #000;
+}
+div.block {
+    height: 100px;
+    background:lightyellow;
+}
+
+
   </style>
 
 <title></title>
@@ -208,6 +241,7 @@ svg {
 </head>
 
 <body>
+<div class="tooltip2"><div id='tipDiv'></div><p class='textbox'></p></div>
 <div class="container">
     <h1>OCHA Donors and Recipients 2016</h1>
     <div class="buttons-container">
@@ -218,105 +252,107 @@ svg {
     <!-- <button id="AllTripsButton" disabled="true" >by Region</button> -->
 
     <div id="chart_placeholder"></div>
+
+
 </div>
 
 <!-- Your data files can't be accessed from jsfiddle,so I'm storing 
      the data as <pre> blocks,and using text parsing functions in the
      code instead of file-accessing functions. -->
 <pre id="neighborhoods">
-name,color,category,figure
-United States,#0066B3,donor,8
-United Kingdom,#3E8EDE,donor,74
-Sweden,#CCDEE3,donor,41
-European Commission,#0066B3,donor,0
-Germany,#3E8EDE,donor,15
-Norway,#CCDEE3,donor,57
-Switzerland,#0066B3,donor,23
-Japan,#3E8EDE,donor,8
-Belgium,#CCDEE3,donor,29
-Australia,#0066B3,donor,87
-Canada,#3E8EDE,donor,24
-Netherlands,#CCDEE3,donor,96
-Ireland,#0066B3,donor,91
-Denmark,#3E8EDE,donor,100
-Finland,#CCDEE3,donor,100
-New Zealand,#0066B3,donor,100
-Spain,#3E8EDE,donor,80
-Korea Republic of,#CCDEE3,donor,74
-France,#0066B3,donor,100
-Russian Federation,#3E8EDE,donor,59
-Other Donors,#CCDEE3,donor,11
-Eritrea,#F58233,recipient,90
-Regional Office for the Caucasus and Central Asia,#FEDBB4,recipient,79
-Liaison Offices,#FBB674,recipient,98
-Philippines,#F58233,recipient,100
-Regional Office for Latin America and the Caribbean,#FEDBB4,recipient,85
-Regional Office for the Pacific,#FBB674,recipient,99
-Côte d'Ivoire,#F58233,recipient,87
-Colombia,#FEDBB4,recipient,84
-Burundi,#FBB674,recipient,73
-Regional Office for Eastern Africa,#F58233,recipient,87
-Regional Office for the Middle East and North Africa,#FEDBB4,recipient,89
-Haiti,#FBB674,recipient,85
-Regional Office for Southern Africa,#F58233,recipient,66
-Mali,#FEDBB4,recipient,90
-Myanmar,#FBB674,recipient,97
-Pakistan,#F58233,recipient,99
-Regional Office for Asia and the Pacific,#FEDBB4,recipient,77
-Niger,#FBB674,recipient,93
-Central African Republic,#F58233,recipient,86
-Chad,#FEDBB4,recipient,91
-Ukraine,#FBB674,recipient,81
-Afghanistan,#F58233,recipient,99
-OPT,#FEDBB4,recipient,90
-Nigeria,#FBB674,recipient,86
-Regional Office for West and Central Africa,#F58233,recipient,89
-Somalia,#FEDBB4,recipient,97
-Yemen,#FBB674,recipient,99
-Democratic Republic of Congo,#F58233,recipient,95
-Sudan,#FEDBB4,recipient,98
-South Sudan,#FBB674,recipient,99
-Ethiopia,#F58233,recipient,89
-Iraq,#FEDBB4,recipient,101
-CHF Management Units,#FBB674,recipient,83
-Syria,#F58233,recipient,103
-Headquarter Activities,#FEDBB4,recipient,95
-Unearmarked,#FBB674,recipient,100
+name,color,category,figure,trend1,trend2,trend3
+United States,#0066B3,donor,8,30,40,49
+United Kingdom,#3E8EDE,donor,74,25,28,33
+Sweden,#CCDEE3,donor,41,217,218,314
+European Commission,#0066B3,donor,0,18,17,19
+Germany,#3E8EDE,donor,15,6,7,14
+Norway,#CCDEE3,donor,57,103,107,125
+Switzerland,#0066B3,donor,23,23,8,8,9
+Japan,#3E8EDE,donor,8,6,9,9
+Belgium,#CCDEE3,donor,29,2,3,8
+Australia,#0066B3,donor,87,13,11,10
+Canada,#3E8EDE,donor,24,10,6,8
+Netherlands,#CCDEE3,donor,96,5,7,5
+Ireland,#0066B3,donor,91,2,3,5
+Denmark,#3E8EDE,donor,100,30,30,30
+Finland,#CCDEE3,donor,100,3,4,4
+New Zealand,#0066B3,donor,100,5,5,5
+Spain,#3E8EDE,donor,80,0.5,0.5,1.2
+Korea Republic of,#CCDEE3,donor,74,0.9,1.5,1.3
+France,#0066B3,donor,100,1,1,1
+Russian Federation,#3E8EDE,donor,59,0.9,1,0.8
+Other Donors,#CCDEE3,donor,11,0.5,0.7,0.5
+Eritrea,#F58233,recipient,90,30,40,49
+Regional Office for the Caucasus and Central Asia,#FEDBB4,recipient,79,30,40,49
+Liaison Offices,#FBB674,recipient,98,30,40,49
+Philippines,#F58233,recipient,100,30,40,49
+Regional Office for Latin America and the Caribbean,#FEDBB4,recipient,85,30,40,49
+Regional Office for the Pacific,#FBB674,recipient,99,30,40,49
+Côte d'Ivoire,#F58233,recipient,87,30,40,49
+Colombia,#FEDBB4,recipient,84,30,40,49
+Burundi,#FBB674,recipient,73,30,40,49
+Regional Office for Eastern Africa,#F58233,recipient,87,30,40,49
+Regional Office for the Middle East and North Africa,#FEDBB4,recipient,89,30,40,49
+Haiti,#FBB674,recipient,85,30,40,49
+Regional Office for Southern Africa,#F58233,recipient,66,30,40,49
+Mali,#FEDBB4,recipient,90,30,40,49
+Myanmar,#FBB674,recipient,97,30,40,49
+Pakistan,#F58233,recipient,99,30,40,49
+Regional Office for Asia and the Pacific,#FEDBB4,recipient,77,30,40,49
+Niger,#FBB674,recipient,93,30,40,49
+Central African Republic,#F58233,recipient,86,30,40,49
+Chad,#FEDBB4,recipient,91,30,40,49
+Ukraine,#FBB674,recipient,81,30,40,49
+Afghanistan,#F58233,recipient,99,30,40,49
+OPT,#FEDBB4,recipient,90,30,40,49
+Nigeria,#FBB674,recipient,86,30,40,49
+Regional Office for West and Central Africa,#F58233,recipient,89,30,40,49
+Somalia,#FEDBB4,recipient,97,30,40,49
+Yemen,#FBB674,recipient,99,30,40,49
+Democratic Republic of Congo,#F58233,recipient,95,30,40,49
+Sudan,#FEDBB4,recipient,98,30,40,49
+South Sudan,#FBB674,recipient,99,30,40,49
+Ethiopia,#F58233,recipient,89,30,40,49
+Iraq,#FEDBB4,recipient,101,30,40,49
+CHF Management Units,#FBB674,recipient,83,30,40,49
+Syria,#F58233,recipient,103,30,40,49
+Headquarter Activities,#FEDBB4,recipient,95,30,40,49
+Unearmarked,#FBB674,recipient,100,30,40,49
 </pre>
 
 <pre id="neighborhoods2">
-name,color,category,figure
-United States,#0066B3,donor,8
-United Kingdom,#3E8EDE,donor,74
-Sweden,#CCDEE3,donor,41
-European Commission,#0066B3,donor,0
-Germany,#3E8EDE,donor,15
-Norway,#CCDEE3,donor,57
-Switzerland,#0066B3,donor,23
-Japan,#3E8EDE,donor,8
-Belgium,#CCDEE3,donor,29
-Australia,#0066B3,donor,87
-Canada,#3E8EDE,donor,24
-Netherlands,#CCDEE3,donor,96
-Ireland,#0066B3,donor,91
-Denmark,#3E8EDE,donor,100
-Finland,#CCDEE3,donor,100
-New Zealand,#0066B3,donor,100
-Spain,#3E8EDE,donor,80
-Korea Republic of,#CCDEE3,donor,74
-France,#0066B3,donor,100
-Russian Federation,#3E8EDE,donor,59
-Other Donors,#CCDEE3,donor,11
-Liaison Offices,#F58233,recipient,98
-Latin America and the Caribbean,#F58233,recipient,84
-Asia,#FEDBB4,recipient,98
-Europe,#FBB674,recipient,81
-CHF Management Units,#F58233,recipient,83
-Regional Offices,#FEDBB4,recipient,83
-Headquarters,#FBB674,recipient,95
-Mid-East & Northern/Central Asia,#F58233,recipient,95
-Africa,#FEDBB4,recipient,93
-Unearmarked,#FBB674,recipient,100
+name,color,category,figure,trend1,trend2,trend3
+United States,#0066B3,donor,8,30,40,49
+United Kingdom,#3E8EDE,donor,74,25,28,33
+Sweden,#CCDEE3,donor,41,217,218,314
+European Commission,#0066B3,donor,0,18,17,19
+Germany,#3E8EDE,donor,15,6,7,14
+Norway,#CCDEE3,donor,57,103,107,125
+Switzerland,#0066B3,donor,23,8,8,9
+Japan,#3E8EDE,donor,8,6,9,9
+Belgium,#CCDEE3,donor,29,2,3,8
+Australia,#0066B3,donor,87,13,11,10
+Canada,#3E8EDE,donor,24,10,6,8
+Netherlands,#CCDEE3,donor,96,5,7,5
+Ireland,#0066B3,donor,91,2,3,5
+Denmark,#3E8EDE,donor,100,30,30,30
+Finland,#CCDEE3,donor,100,3,4,4
+New Zealand,#0066B3,donor,100,5,5,5
+Spain,#3E8EDE,donor,80,0.5,0.5,1.2
+Korea Republic of,#CCDEE3,donor,74,0.9,1.5,1.3
+France,#0066B3,donor,100,1,1,1
+Russian Federation,#3E8EDE,donor,59,0.9,1,0.8
+Other Donors,#CCDEE3,donor,11,0.5,0.7,0.5
+Liaison Offices,#F58233,recipient,98,30,40,49
+Latin America and the Caribbean,#F58233,recipient,84,30,40,49
+Asia,#FEDBB4,recipient,98,30,40,49
+Europe,#FBB674,recipient,81,30,40,49
+CHF Management Units,#F58233,recipient,83,30,40,49
+Regional Offices,#FEDBB4,recipient,83,30,40,49
+Headquarters,#FBB674,recipient,95,30,40,49
+Mid-East & Northern/Central Asia,#F58233,recipient,95,30,40,49
+Africa,#FEDBB4,recipient,93,30,40,49
+Unearmarked,#FBB674,recipient,100,30,40,49
 </pre>
 
 <pre id="all_trips">
@@ -482,11 +518,12 @@ function updateChords( datasetURL ) {
     d3.selectAll("path.chord").remove()
     var matrix = JSON.parse( d3.select(datasetURL).text() );
         // instead of d3.json
-    console.log(matrix);
     /* Compute chord layout. */
     layout = getDefaultLayout(); //create a new layout object
     layoutMatrix =layout.matrix(matrix);
     layoutMatrixChords = layoutMatrix.chords();
+
+    d3.select(".d3-tip").remove()
 
 
 
@@ -689,10 +726,10 @@ function updateChords( datasetURL ) {
         .transition().duration(100).attr("opacity",1) //reset opacity
     ;
 
-    //add the mouseover/fade out behaviour to the groups
-    //this is reset on every update,so it will use the latest
-    //chordPaths selection
+
+    var tooltip2 = d3.select("div.tooltip2");
     groupG.on("mouseover",function(d) {
+
         chordPaths.classed("fade",function (p) {
             //returns true if *neither* the source or target of the chord
             //matches the group that has been moused-over
@@ -700,52 +737,29 @@ function updateChords( datasetURL ) {
         });
         g.selectAll("path.fade").transition().style("opacity",0);
 
-        console.log(neighborhoods[d.index].category);
 
-        f= d3.format(".0%");
+        var tipSVG = tooltipGenerator(neighborhoods[d.index].figure, 100-neighborhoods[d.index].figure, "#tipDiv", neighborhoods[d.index].name, neighborhoods[d.index].figure, numberWithCommas(d.value), ".textbox", neighborhoods[d.index].category,neighborhoods[d.index].trend1,neighborhoods[d.index].trend2,neighborhoods[d.index].trend3 );
+        return tooltip2.style("visibility", "visible");
 
-        if (neighborhoods[d.index].category == 'donor') {
-            $(this).popover({
-                    placement: 'auto top',
-                    container: 'body',
-                    mouseOffset: 10,
-                    followMouse: true,
-                    trigger: 'hover',
-                    html : true,
-                    content: function() { 
-                      return "<p style='text-align: left; '><span style='font-size: 18px; color: #000; font-weight:bold'>" 
-                        + neighborhoods[d.index].name +
-                        "</span><br /><span style='font-size: 16px;color:#ED7A23'>" 
-                        + neighborhoods[d.index].figure  + "% unearmarked</span> <br /><span style='font-size: 15px; color: #000'>Contribution: <strong>$" +
-                        numberWithCommas(d.value)  + "M</strong></span></p>";
-                        ; }
-                  });
-            $(this).popover('show');
-        } else {
-            $(this).popover({
-                    placement: 'auto top',
-                    container: 'body',
-                    mouseOffset: 10,
-                    followMouse: true,
-                    trigger: 'hover',
-                    html : true,
-                    content: function() { 
-                      return "<p style='text-align: left; '><span style='font-size: 18px; color: #000'>" 
-                        + neighborhoods[d.index].name +
-                        "<br /><span style='font-size: 16px;color:#ED7A23'>" 
-                        + neighborhoods[d.index].figure  + "% rate of expenditure</span>  <br /><span style='font-size: 15px; color: #000'>Received: <strong>$"+numberWithCommas(d.value)+"M</strong></span></p>"; }
-                  });
-            $(this).popover('show');         
-        }
 
+    })
+    groupG.on("mousemove",function(d) {
+        return tooltip2
+            .style("top", (d3.event.pageY + 16) + "px")
+            .style("left", (d3.event.pageX + 16) + "px");
     });
     groupG.on("mouseout",function(d) {
+       
+                 $( "#tipDiv" ).empty();
+        
         chordPaths.classed("nofade",function (p) {
             //returns true if *neither* the source or target of the chord
             //matches the group that has been moused-over
             return ((p.source.index != d.index) && (p.target.index != d.index));
         });
         g.selectAll("path.nofade").transition().style("opacity",1);
+        return tooltip2.style("visibility", "hidden");
+
     });
     //the "unfade" is handled with CSS :hover class on g#circle
     //you could also do it using a mouseout event:
@@ -859,7 +873,91 @@ function chordTween(oldLayout) {
 }
 
 
+function tooltipGenerator(pie1, pie2, target1, name, figure, total,target2, category, trend1, trend2, trend3) {
+    var w = 200,                        //width
+    h = 100,                            //height
+    r = 50,                            //radius
+    color = d3.scale.category20c(["#98abc5", "#8a89a6"]);   
 
+ //builtin range of colors
+ 
+    data = [{"value":pie1}, 
+            {"value":pie2}];
+    
+    var vis = d3.select(target1)
+        .append("svg:svg")              //create the SVG element inside the <body>
+        .data([data])                   //associate our data with the document
+            .attr("width", w)           //set the width and height of our visualization (these will be attributes of the <svg> tag
+            .attr("height", h)
+        .append("svg:g")                //make a group to hold our pie chart
+            .attr("transform", "translate(" + r + "," + r + ")")    //move the center of the pie chart from 0, 0 to radius, radius
+
+    var arc = d3.svg.arc()              //this will create <path> elements for us using arc data
+        .outerRadius(r);
+
+    var pie = d3.layout.pie()           //this will create arc data for us given a list of values
+        .value(function(d) { return d.value; });    //we must tell it out to access the value of each element in our data array
+
+    var arcs = vis.selectAll("g.slice")     //this selects all <g> elements with class slice (there aren't any yet)
+        .data(pie)                          //associate the generated pie data (an array of arcs, each having startAngle, endAngle and value properties) 
+        .enter()                            //this will create <g> elements for every "extra" data element that should be associated with a selection. The result is creating a <g> for every object in the data array
+            .append("svg:g")                //create a group to hold each slice (we will have a <path> and a <text> element associated with each slice)
+                .attr("class", "slice");    //allow us to style things in the slices (like text)
+
+        arcs.append("svg:path")
+                .attr("fill", function(d, i) { return color(i); } ) //set the color for each slice to be chosen from the color function defined above
+                .attr("d", arc);                                    //this creates the actual SVG path using the associated data (pie) with the arc drawing function
+
+        arcs.append("svg:text")                                     //add a label to each slice
+                .attr("transform", function(d) {                    //set the label's origin to the center of the arc
+                //we have to make sure to set these before calling arc.centroid
+                d.innerRadius = 0;
+                d.outerRadius = r;
+                return "translate(" + arc.centroid(d) + ")";        //this gives us a pair of coordinates like [50, 50]
+            })
+            .attr("text-anchor", "middle")                          //center the text on it's origin
+            .text(function(d, i) { return data[i].label; });        //get the label from our original data array
+    if(category == "donor"){
+        var text = d3.select(target2)
+            .html("<p style='text-align: left; '><span style='font-size: 18px; color: #000; font-weight:bold'>" 
+            + name + "</span><br /><span style='font-size: 16px;color:#ED7A23'>" 
+            + figure  + "% unearmarked</span> <br /><span style='font-size: 15px; color: #000'>Contribution: <strong>$" +
+            total + "M</strong></span><br />"+formatPercent(total/262.6)+" of OCHA total donor income</p>");
+    } else {
+        var text = d3.select(target2)
+            .html("<p style='text-align: left; '><span style='font-size: 18px; color: #000; font-weight:bold'>" 
+            + name + "</span><br /><span style='font-size: 16px;color:#ED7A23'>" 
+            + figure  + "% rate of expenditure</span> <br /><span style='font-size: 15px; color: #000'>Received: <strong>$" +
+            total + "M</strong></span><br />"+formatPercent(total/262.6)+" of OCHA total donor donations</p>");      
+    }
+
+    if(category == "donor"){
+
+        var spark = d3.select(target2).append("svg:svg").attr("width", "100%").attr("height", "100%");
+
+        // create a simple data array that we'll plot with a line (this array represents only the Y values, X will just be the index location)
+        var d = [trend1, trend2, trend3];
+
+        // X scale will fit values from 0-10 within pixels 0-100
+        var x = d3.scale.linear().domain([0, d.length]).range([0, 300]);
+        // Y scale will fit values from 0-10 within pixels 0-100
+        var y = d3.scale.linear().domain([d3.min(d), d3.max(d)]).range([0, 100]);
+
+        // create a line object that represents the SVN line we're creating
+        var line = d3.svg.line()
+            // assign the X function to plot our line as we wish
+            .x(function(d,i) { 
+                return x(i); 
+            })
+            .y(function(d) { 
+                return  y(d); 
+            })
+    
+            // display the line by appending an svg:path element with the data line we created above
+            spark.append("svg:path").attr("d", line(d));
+    }
+
+}
 
 
 /* Activate the buttons and link to data sets */
