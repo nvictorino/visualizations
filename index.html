@@ -7,7 +7,6 @@
   <meta name="robots" content="noindex,nofollow">
   <meta name="googlebot" content="noindex,nofollow">
   <script type="text/javascript" src="//d3js.org/d3.v3.js"></script>
-    <link rel="stylesheet" type="text/css" href="/css/result-light.css"> 
       <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
       <script type="text/javascript" src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
@@ -185,6 +184,7 @@ a:not(:hover) {
 }
 text {
     fill: #000;
+    font-weight:bold;
 }
 svg {
     font-size: 12px;
@@ -214,22 +214,32 @@ p {
   font-size: 12px;
 }
         .textbox path {
-                stroke: steelblue;
-                stroke-width: 1;
+                stroke: #ffffff;
+                stroke-width: 2;
                 fill: none;
             }
+.tipDiv {
+    float:left;
+}
+.textbox {
+    float:left;
+}
 
 div.tooltip2 {
-    background: #fff;
-    border: 1px solid black;
+    visibility: hidden;
+    background: #3E8EDE;
     position: absolute;
     color: #000;
+    padding:20px;
+    box-shadow: 2px 2px 15px #888888;
 }
 div.block {
     height: 100px;
     background:lightyellow;
 }
-
+tspan{
+  font-weight: normal
+}
 
   </style>
 
@@ -468,6 +478,7 @@ var dataset = "#all_trips";
 //create number formatting functions
 var formatPercent = d3.format("%");
 var numberWithCommas = d3.format("0,f");
+var decimalPlaceLimit = d3.format("0,.2f")
 
 //create the arc path data generator for the groups
 var arc = d3.svg.arc()
@@ -516,6 +527,7 @@ g.append("circle")
 function updateChords( datasetURL ) {
     
     d3.selectAll("path.chord").remove()
+    d3.selectAll("g.group").remove()
     var matrix = JSON.parse( d3.select(datasetURL).text() );
         // instead of d3.json
     /* Compute chord layout. */
@@ -665,16 +677,22 @@ function updateChords( datasetURL ) {
         ;
     
     //create the group labels
-    newGroups.append("svg:text")
+    var groupLabel = newGroups.append("svg:text")
         .attr("xlink:href",function (d) {
             return "#group" + d.index;
         })
+        .attr("id", function(d, i) { return "group" + d.index; })
         .attr("dy",".35em")
         .attr("color","#fff")
         .text(function (d) {
-            return neighborhoods[d.index].name+": $"+numberWithCommas(d.value) 
-                + "M";
-        });
+            return neighborhoods[d.index].name;
+        })
+        console.log(groupLabel);
+    groupLabel.append('tspan')
+        .text(function (d) {
+            return ": $"+decimalPlaceLimit(d.value) + "M";
+        })
+
 
     //position group labels to match layout
     groupG.select("text")
@@ -738,7 +756,7 @@ function updateChords( datasetURL ) {
         g.selectAll("path.fade").transition().style("opacity",0);
 
 
-        var tipSVG = tooltipGenerator(neighborhoods[d.index].figure, 100-neighborhoods[d.index].figure, "#tipDiv", neighborhoods[d.index].name, neighborhoods[d.index].figure, numberWithCommas(d.value), ".textbox", neighborhoods[d.index].category,neighborhoods[d.index].trend1,neighborhoods[d.index].trend2,neighborhoods[d.index].trend3 );
+        var tipSVG = tooltipGenerator(neighborhoods[d.index].figure, 100-neighborhoods[d.index].figure, "#tipDiv", neighborhoods[d.index].name, neighborhoods[d.index].figure, decimalPlaceLimit(d.value), ".textbox", neighborhoods[d.index].category,neighborhoods[d.index].trend1,neighborhoods[d.index].trend2,neighborhoods[d.index].trend3 );
         return tooltip2.style("visibility", "visible");
 
 
@@ -750,7 +768,7 @@ function updateChords( datasetURL ) {
     });
     groupG.on("mouseout",function(d) {
        
-                 $( "#tipDiv" ).empty();
+        $( "#tipDiv" ).empty();
         
         chordPaths.classed("nofade",function (p) {
             //returns true if *neither* the source or target of the chord
@@ -758,7 +776,7 @@ function updateChords( datasetURL ) {
             return ((p.source.index != d.index) && (p.target.index != d.index));
         });
         g.selectAll("path.nofade").transition().style("opacity",1);
-        return tooltip2.style("visibility", "hidden");
+      return tooltip2.style("visibility", "hidden");
 
     });
     //the "unfade" is handled with CSS :hover class on g#circle
@@ -874,10 +892,10 @@ function chordTween(oldLayout) {
 
 
 function tooltipGenerator(pie1, pie2, target1, name, figure, total,target2, category, trend1, trend2, trend3) {
-    var w = 200,                        //width
+    var w = 100,                        //width
     h = 100,                            //height
     r = 50,                            //radius
-    color = d3.scale.category20c(["#98abc5", "#8a89a6"]);   
+
 
  //builtin range of colors
  
@@ -905,7 +923,15 @@ function tooltipGenerator(pie1, pie2, target1, name, figure, total,target2, cate
                 .attr("class", "slice");    //allow us to style things in the slices (like text)
 
         arcs.append("svg:path")
-                .attr("fill", function(d, i) { return color(i); } ) //set the color for each slice to be chosen from the color function defined above
+                .attr("fill", function(d, i) { 
+                    console.log(i);
+                    if (i == 1) {
+                        return "#54AADE"
+                    } else {
+                        return "#ED7A23"
+                    }
+
+                } ) //set the color for each slice to be chosen from the color function defined above
                 .attr("d", arc);                                    //this creates the actual SVG path using the associated data (pie) with the arc drawing function
 
         arcs.append("svg:text")                                     //add a label to each slice
@@ -919,21 +945,21 @@ function tooltipGenerator(pie1, pie2, target1, name, figure, total,target2, cate
             .text(function(d, i) { return data[i].label; });        //get the label from our original data array
     if(category == "donor"){
         var text = d3.select(target2)
-            .html("<p style='text-align: left; '><span style='font-size: 18px; color: #000; font-weight:bold'>" 
-            + name + "</span><br /><span style='font-size: 16px;color:#ED7A23'>" 
-            + figure  + "% unearmarked</span> <br /><span style='font-size: 15px; color: #000'>Contribution: <strong>$" +
-            total + "M</strong></span><br />"+formatPercent(total/262.6)+" of OCHA total donor income</p>");
+            .html("<p style='text-align: left; '><span style='font-size: 20px; text-transform: uppercase;color: #fff; '>" 
+            + name + "</span><br /><span style='font-size: 17px;color:#ED7A23; font-weight:bold'>" 
+            + figure  + "% unearmarked</span> <br /><span style='font-size: 15px; color: #fff'>Contribution: <strong>$" +
+            total + "M</strong></span><br /><span style='font-size: 13px; color: #fff'>"+formatPercent(total/262.6)+" of OCHA total donor income</span></p>");
     } else {
         var text = d3.select(target2)
-            .html("<p style='text-align: left; '><span style='font-size: 18px; color: #000; font-weight:bold'>" 
-            + name + "</span><br /><span style='font-size: 16px;color:#ED7A23'>" 
-            + figure  + "% rate of expenditure</span> <br /><span style='font-size: 15px; color: #000'>Received: <strong>$" +
-            total + "M</strong></span><br />"+formatPercent(total/262.6)+" of OCHA total donor donations</p>");      
+            .html("<p style='text-align: left; '><span style='font-size: 20px; color: #fff; '>" 
+            + name + "</span><br /><span style='font-size: 17px;color:#ED7A23; font-weight:bold'>" 
+            + figure  + "% rate of expenditure</span> <br /><span style='font-size: 15px; color: #fff'>Received: <strong>$" +
+            total + "M</strong></span><br /><span style='font-size: 13px; color: #fff'>"+formatPercent(total/262.6)+" of OCHA total donor donations</span></p>");      
     }
 
     if(category == "donor"){
-
-        var spark = d3.select(target2).append("svg:svg").attr("width", "100%").attr("height", "100%");
+        var spark = d3.select(target2).append("div").html("Contribution Trend Line (2014-2016)");
+        var spark = d3.select(target2).append("svg:svg").attr("width", "200px").attr("height", "100%");
 
         // create a simple data array that we'll plot with a line (this array represents only the Y values, X will just be the index location)
         var d = [trend1, trend2, trend3];
@@ -941,7 +967,7 @@ function tooltipGenerator(pie1, pie2, target1, name, figure, total,target2, cate
         // X scale will fit values from 0-10 within pixels 0-100
         var x = d3.scale.linear().domain([0, d.length]).range([0, 300]);
         // Y scale will fit values from 0-10 within pixels 0-100
-        var y = d3.scale.linear().domain([d3.min(d), d3.max(d)]).range([0, 100]);
+        var y = d3.scale.linear().domain([d3.max(d), d3.min(d)]).range([0, 100]);
 
         // create a line object that represents the SVN line we're creating
         var line = d3.svg.line()
