@@ -186,7 +186,10 @@ a:not(:hover) {
 text {
     fill: #000;
     font-weight:bold;
+<<<<<<< HEAD
     font-size:13px;
+=======
+>>>>>>> origin/master
 }
 svg {
     font-size: 12px;
@@ -217,6 +220,7 @@ svg {
                 stroke-width: 2;
                 fill: none;
             }
+<<<<<<< HEAD
 #tipDiv {
     float:left;
     display:block;
@@ -227,16 +231,31 @@ svg {
     display:block;
     width:150px;
     margin-left: 20px;
+=======
+.tipDiv {
+    float:left;
+}
+.textbox {
+    float:left;
+>>>>>>> origin/master
 }
 
 div.tooltip2 {
     visibility: hidden;
+<<<<<<< HEAD
     background: #478AC9;
     position: absolute;
     color: #000;
     padding:30px;
     box-shadow: 2px 2px 15px #888888;
     font-family: 'Roboto Condensed', sans-serif;
+=======
+    background: #3E8EDE;
+    position: absolute;
+    color: #000;
+    padding:20px;
+    box-shadow: 2px 2px 15px #888888;
+>>>>>>> origin/master
 }
 div.block {
     height: 100px;
@@ -245,6 +264,7 @@ div.block {
 tspan{
   font-weight: normal
 }
+<<<<<<< HEAD
 path.domain {
     position: relative;
     right:10px;
@@ -277,6 +297,8 @@ path.domain {
 #lineChart text {
   fill: #fff;
 }
+=======
+>>>>>>> origin/master
 
   </style>
 
@@ -728,6 +750,10 @@ function updateChords( datasetURL ) {
         .text(function (d) {
             return neighborhoods[d.index].name;
         })
+<<<<<<< HEAD
+=======
+        console.log(groupLabel);
+>>>>>>> origin/master
     groupLabel.append('tspan')
         .text(function (d) {
             return ": $"+decimalPlaceLimit(d.value) + "M";
@@ -810,8 +836,11 @@ function updateChords( datasetURL ) {
     groupG.on("mouseout",function(d) {
        
         $( "#tipDiv" ).empty();
+<<<<<<< HEAD
         $( "#lineChart" ).empty();
 
+=======
+>>>>>>> origin/master
         
         chordPaths.classed("nofade",function (p) {
             //returns true if *neither* the source or target of the chord
@@ -819,7 +848,11 @@ function updateChords( datasetURL ) {
             return ((p.source.index != d.index) && (p.target.index != d.index));
         });
         g.selectAll("path.nofade").transition().style("opacity",1);
+<<<<<<< HEAD
      return tooltip2.style("visibility", "hidden");
+=======
+      return tooltip2.style("visibility", "hidden");
+>>>>>>> origin/master
 
     });
     //the "unfade" is handled with CSS :hover class on g#circle
@@ -937,7 +970,11 @@ function chordTween(oldLayout) {
 function tooltipGenerator(pie1, pie2, target1, name, figure, total,target2, category, trend1, trend2, trend3) {
     var w = 100,                        //width
     h = 100,                            //height
+<<<<<<< HEAD
     r = 50;                       //radius
+=======
+    r = 50,                            //radius
+>>>>>>> origin/master
 
 
  //builtin range of colors
@@ -977,6 +1014,7 @@ function tooltipGenerator(pie1, pie2, target1, name, figure, total,target2, cate
     if(category == "donor") {   
         arcs.append("svg:path")
                 .attr("fill", function(d, i) { 
+<<<<<<< HEAD
                     if (i == 1) {
                         return "#ADD5E1"
                     } else {
@@ -997,6 +1035,17 @@ function tooltipGenerator(pie1, pie2, target1, name, figure, total,target2, cate
                 } ) 
                 .attr("d", arc);       
     }                              
+=======
+                    console.log(i);
+                    if (i == 1) {
+                        return "#54AADE"
+                    } else {
+                        return "#ED7A23"
+                    }
+
+                } ) //set the color for each slice to be chosen from the color function defined above
+                .attr("d", arc);                                    //this creates the actual SVG path using the associated data (pie) with the arc drawing function
+>>>>>>> origin/master
 
         arcs.append("svg:text")                                     //add a label to each slice
                 .attr("transform", function(d) {                    //set the label's origin to the center of the arc
@@ -1009,6 +1058,7 @@ function tooltipGenerator(pie1, pie2, target1, name, figure, total,target2, cate
             .text(function(d, i) { return data[i].label; });        //get the label from our original data array
     if(category == "donor"){
         var text = d3.select(target2)
+<<<<<<< HEAD
             .html("<p style='text-align: left; '><span style='font-size: 20px;color:#89C0E9; font-weight:bold'>" 
             + figure  + "% unearmarked</span> <br /><span style='font-size: 18px; color: #fff'>Contribution: <br /><strong>$" +
             total + "M</strong></span><br /><span style='font-size: 15px; color: #fff'>"+formatPercent(total/262.6)+" of total OCHA <br />donor income</span></p>");
@@ -1027,6 +1077,23 @@ function tooltipGenerator(pie1, pie2, target1, name, figure, total,target2, cate
 
         var spark = d3.select("#lineChart").append("svg:svg").attr("width", sparkWidth-(sparkMargin*2)).attr("height", sparkHeight-(sparkMargin*2));
 
+=======
+            .html("<p style='text-align: left; '><span style='font-size: 20px; text-transform: uppercase;color: #fff; '>" 
+            + name + "</span><br /><span style='font-size: 17px;color:#ED7A23; font-weight:bold'>" 
+            + figure  + "% unearmarked</span> <br /><span style='font-size: 15px; color: #fff'>Contribution: <strong>$" +
+            total + "M</strong></span><br /><span style='font-size: 13px; color: #fff'>"+formatPercent(total/262.6)+" of OCHA total donor income</span></p>");
+    } else {
+        var text = d3.select(target2)
+            .html("<p style='text-align: left; '><span style='font-size: 20px; color: #fff; '>" 
+            + name + "</span><br /><span style='font-size: 17px;color:#ED7A23; font-weight:bold'>" 
+            + figure  + "% rate of expenditure</span> <br /><span style='font-size: 15px; color: #fff'>Received: <strong>$" +
+            total + "M</strong></span><br /><span style='font-size: 13px; color: #fff'>"+formatPercent(total/262.6)+" of OCHA total donor donations</span></p>");      
+    }
+
+    if(category == "donor"){
+        var spark = d3.select(target2).append("div").html("Contribution Trend Line (2014-2016)");
+        var spark = d3.select(target2).append("svg:svg").attr("width", "200px").attr("height", "100%");
+>>>>>>> origin/master
 
         // create a simple data array that we'll plot with a line (this array represents only the Y values, X will just be the index location)
         var d = [trend1, trend2, trend3];
@@ -1038,6 +1105,7 @@ function tooltipGenerator(pie1, pie2, target1, name, figure, total,target2, cate
         // X scale will fit values from 0-10 within pixels 0-100
         var xScale = d3.scale.linear().domain([0,d.length]).range([sparkMargin+(sparkMargin*1.3),sparkWidth-sparkMargin]);
         // Y scale will fit values from 0-10 within pixels 0-100
+<<<<<<< HEAD
         var yScale = d3.scale.linear().domain([50,0]).range([0,sparkHeight-(sparkMargin*3)]).nice();
 
 
@@ -1049,6 +1117,9 @@ function tooltipGenerator(pie1, pie2, target1, name, figure, total,target2, cate
         spark.append("svg:g")
         .call(yAxis).attr("transform", "translate(" + (sparkMargin+17) + "," + 7.8 + ")").attr("class", "yaxis");
 
+=======
+        var y = d3.scale.linear().domain([d3.max(d), d3.min(d)]).range([0, 100]);
+>>>>>>> origin/master
 
         // create a line object that represents the SVN line we're creating
         var line = d3.svg.line()
