@@ -186,7 +186,7 @@ a:not(:hover) {
 text {
     fill: #000;
     font-weight:bold;
-    font-size:13px;
+    font-size:10px;
 }
 svg {
     font-size: 12px;
@@ -199,9 +199,6 @@ svg {
     text-align: center;
         margin-top: 70px;
     display: block;
-}
-.container {
-    width:1400px !important;
 }
 
 
@@ -234,10 +231,10 @@ div.tooltip2 {
     background: #478AC9;
     position: absolute;
     color: #000;
-    padding:30px;
+    padding:15px 0 0 15px;
     box-shadow: 2px 2px 15px #888888;
     font-family: 'Roboto Condensed', sans-serif;
-    opacity: .8;
+    opacity: .9;
 }
 div.block {
     height: 100px;
@@ -268,6 +265,7 @@ path.domain {
 #lineChart {
     float:left;
     display: inline-block;
+    border-left:1px dotted white;;
 
 }
 #lineChart svg > path {
@@ -279,6 +277,7 @@ path.domain {
   fill: #fff;
 }
 
+
   </style>
 
 <title></title>
@@ -289,6 +288,9 @@ path.domain {
 </head>
 
 <body>
+
+
+
 <div class="tooltip2">
     <div id='countryName'></div>
     <div id='tipDiv'></div>
@@ -504,10 +506,18 @@ Unearmarked,#FBB674,recipient,100,30,40,49
 [3.7,31.6,15,0,2.3,8.4,2.2,0.7,2.4,6.4,1.4,5.7,5,4.5,3.8,3.5,1.1,1,1.1,0.5,1.7,0,0,0,0,0,0,0,0,0,0]]
 </pre>
 <script type='text/javascript'>//<![CDATA[
+
+$(window).resize(function(){location.reload();});
+
 window.onload=function(){
 /*** Define parameters and tools ***/
-var width = 1400,
-    height = 1400,
+
+
+var element = d3.select('#chart_placeholder').node();
+var elementWH = element.getBoundingClientRect().width;
+
+var width = elementWH,
+    height = elementWH,
     outerRadius = Math.min(width,height) / 2.2 - 100,
     innerRadius = outerRadius - 19;
 
@@ -806,7 +816,7 @@ function updateChords( datasetURL ) {
 
         return tooltip2
             .style("top", (d3.event.pageY + 16) + "px")
-            .style("left", (d3.event.pageX  +16) + "px");
+            .style("left", (d3.event.pageX  - 200) + "px");
     });
     groupG.on("mouseout",function(d) {
        
@@ -1013,13 +1023,13 @@ function tooltipGenerator(pie1, pie2, target1, name, figure, total,target2, cate
             .html("<p style='text-align: left; '><span style='font-size: 20px;color:#89C0E9; font-weight:bold'>" 
             + figure  + "% unearmarked</span> <br /><span style='font-size: 18px; color: #fff'>Contribution: <br /><strong>$" +
             total + "M</strong></span><br /><span style='font-size: 15px; color: #fff'>"+formatPercent(total/262.6)+" of total OCHA <br />donor income</span></p>");
-        d3.select(".tooltip2").style("background-color","#478AC9").style("width","500px");
+        d3.select(".tooltip2").style("background-color","#478AC9").style("width","460px");
     } else {
         var text = d3.select(target2)
             .html("<p style='text-align: left; '><span style='font-size: 20px;color:#FBB674; font-weight:bold'>" 
             + figure  + "% rate of expenditure</span> <br /><span style='font-size: 18px; color: #fff'>Received: <br /><strong>$" +
             total + "M</strong></span><br /><span style='font-size: 15px; color: #fff'>"+formatPercent(total/262.6)+" of total OCHA <br />donor donations</span></p>");
-        d3.select(".tooltip2").style("background-color","#F58233").style("width","330px");
+        d3.select(".tooltip2").style("background-color","#F58233").style("width","300px");
     }
 
     if(category == "donor") {
