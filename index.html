@@ -14,7 +14,6 @@
         <script src="bootstrap.tooltip.js"></script>
         <script src="bootstrap.popover.js"></script>
         <script src="d3.layout.chord.sort.js"></script>
-        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
         <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon">
 
@@ -451,7 +450,7 @@ function getDefaultLayout() {
     .sortChords(d3.descending);
 }  
 var last_layout; //store layout between updates
-var countries; //store neighbourhood data outside data-reading function
+var countries;
 
 /*** Initialize the visualization ***/
 var g = d3.select("#chart_placeholder").append("svg")
@@ -507,7 +506,7 @@ function updateChords( datasetURL ) {
       .attr("stop-color",function (d) {
             return countries[d.target.index].color;
     });
-
+    //Create chords and attach the generated gradients
     g.selectAll("path.chord")
       .data(layoutMatrix.chords())
       .enter().append("path")
@@ -898,7 +897,7 @@ function disableButton(buttonNode) {
 }
 }//]]> 
 
-// initializes the chart by prerssing on "by Region" button
+// initializes the chart by pressing on "by Region" button
 $("document").ready(function() {
     setTimeout(function() {
         $("#byRegionButton").trigger('click');
