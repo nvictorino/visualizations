@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+  <script src="countries.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <style type="text/css">
+    #map { width: 820px; height: 530px; margin-top:5px;}
+    body {font-family: 'Roboto', sans-serif; font-size: 12px;}
+    a {text-decoration: none; color: #555555;}
+    .container {width:820px;}
+    .data-type-selector, .year-selector {display:inline-block;}
+    .year-selector {float:right;}
+    svg .leaflet-interactive {stroke-width:0; fill: #0c65af; fill-opacity: 0.6;}
+    .selected {color: #ee7325;}
+    .bar-empty {width:160px; height: 14px; background-color:#e1e1e1 }
+    .bar-data {display: inline-block; width:0; height: 14px; background-color:#ee7325; float:left; }
+    .popup-title {font-size: 16px; text-transform: uppercase; color: #0c65af; font-weight: bold; display:block; margin-bottom: 5px }
+    .popup-spacer {height:5px;}
+  </style>
+
+<title>leaflet template</title>
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="data-type-selector">
+      <a class="pin" href="javascript:changeType('pin')">People in need</a>   
+      &nbsp;&nbsp;|&nbsp;&nbsp;   
+      <a class="targeted" href="javascript:changeType('targeted')">People targeted</a>
+      &nbsp;&nbsp;|&nbsp;&nbsp;   
+      <a class="reached" href="javascript:changeType('reached')">People reached</a>   
+      &nbsp;&nbsp;|&nbsp;&nbsp;   
+      <a class="required" href="javascript:changeType('required')">Funding requirement</a>
+    </div>
+    <div class="year-selector">
+      <a class="2017" href="javascript:changeYear('2017')">2017</a>   
+      &nbsp;&nbsp;|&nbsp;&nbsp;   
+      <a class="2016" href="javascript:changeYear('2016')">2016</a>
+    </div>
+    <div id="map"></div>
+  </div>
+
+  <script>
+    // Initialize map to specified coordinates
+    var map = L.map('map', {
+      center: [15.623, 18.743], // CAREFULL!!! The first position corresponds to the lat (y) and the second to the lon (x)
+      zoom: 2
+    });
+
+    // Add tiles (streets, etc)
+    L.tileLayer('https://api.mapbox.com/styles/v1/nvictorino/cj362h2d400032ro11ai417f1/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibnZpY3RvcmlubyIsImEiOiJsN2RXVkdvIn0.9fBuVYgA7oBG-9Yk4S-29A', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      subdomains: ['a', 'b', 'c']
+    }).addTo(map);
+
+    var currentType = "pin";
+    var currentYear = "2017";
+
+    var layerGroup1 = L.layerGroup().addTo(map);
+
+
+    function changeType(name) {
+      currentType = name;
+        
+      $('.'+name).addClass('selected');
+      $('.'+name).siblings().removeClass("selected");
+      map.removeLayer(layerGroup1);
+      layerGroup1 = L.layerGroup().addTo(map);
+
+      for (i = 0; i < countryData.length; i++) {
+        var pin = countryData[i]["figures"][currentYear]["pin"];
+        var targeted = countryData[i]["figures"][currentYear]["targeted"];
+        var reached = countryData[i]["figures"][currentYear]["reached"];
+        var funded = countryData[i]["figures"][currentYear]["funded"];
+        var required = countryData[i]["figures"][currentYear]["required"];  
+        console.log(targeted/reached);
+        var circleSize = countryData[i]["figures"][currentYear][currentType];
+        var x_coor = countryData[i].longitude;
+        var y_coor = countryData[i].latitude;
+        var label = countryData[i].location;
+        
+        var circle = L.circleMarker([y_coor, x_coor], {radius: circleSize});
+        circle.addTo(layerGroup1);
+        circle.bindPopup(
+          "<span class='popup-title'>"+label+"</span></b><strong>People in need</strong><br />"
+            + pin+"M<div class='popup-spacer'></div><strong>People targeted</strong><br />"
+            + targeted+"M<div class='popup-spacer'></div><strong>People reached</strong><br />"
+            + (Math.floor((reached/targeted)*100))+"%<br /><div class='bar-empty'><div class='bar-data' style='width:"+((reached/targeted)*160)+ "px'></div></div><div class='popup-spacer'></div><strong>Funding required</strong><br />"
+            + required+"M<div class='popup-spacer'></div><strong>Funding progress</strong> "
+            + (Math.floor((funded/required)*100))+"%<br /><div class='bar-empty'><div class='bar-data' style='width:"+((funded/required)*160)+"px'></div></div>"
+          )
+        //.openPopup();
+      };   
+    }
+
+    function changeYear(year) {
+      currentYear = year;
+      $('.'+year).addClass('selected');
+      $('.'+year).siblings().removeClass("selected");
+      changeType(currentType);
+    }
+    changeYear('2017');
+    changeType('pin');
+    
+
+
+
+  </script>
+</body>
+
+  
+
+</body>
+
+</html>
+
