@@ -50,8 +50,8 @@ var countryData = [{
 },
 {
 	"location":"Sierra Leone", 
-	"latitude": 8.375, 
-	"longitude":-66.445, 
+	"latitude": 8.381, 
+	"longitude":-11.886, 
 	"size":10, 
 	"figures": 
 	{

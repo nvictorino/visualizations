@@ -16,14 +16,25 @@
     body {font-family: 'Roboto', sans-serif; font-size: 12px;}
     a {text-decoration: none; color: #555555;}
     .container {width:820px;}
+
+    /* Selector */
     .data-type-selector, .year-selector {display:inline-block;}
     .year-selector {float:right;}
-    svg .leaflet-interactive {stroke-width:0; fill: #0c65af; fill-opacity: 0.6;}
     .selected {color: #ee7325;}
-    .bar-empty {width:160px; height: 14px; background-color:#e1e1e1 }
+
+    /* Circles */
+    svg .leaflet-interactive {stroke-width:0; fill: #0c65af; fill-opacity: 0.6;}
+    
+    /* Popup */
+    .bar-empty {width:160px; height: 14px; background-color:#e1e1e1; margin-top: 3px }
     .bar-data {display: inline-block; width:0; height: 14px; background-color:#ee7325; float:left; }
-    .popup-title {font-size: 16px; text-transform: uppercase; color: #0c65af; font-weight: bold; display:block; margin-bottom: 5px }
-    .popup-spacer {height:5px;}
+    .popup-title {font-size: 15px; text-transform: uppercase; color: #0c65af; font-weight: bold; display:block; margin-bottom: 8px; line-height: 18px }
+    .popup-spacer {height:8px;}
+    .leaflet-popup-content-wrapper { border-radius: 0; }
+    .leaflet-container a.leaflet-popup-close-button {display:none;}
+    .leaflet-popup-content {width:160px !important; margin: 20px; font-size: 12px}
+      .leaflet-popup-content hr {margin: 14px 0 11px;display: block;height: 1px;border: 0;border-top: 1px solid #ccc;padding: 0; }
+
   </style>
 
 <title>leaflet template</title>
@@ -57,7 +68,7 @@
     });
 
     // Add tiles (streets, etc)
-    L.tileLayer('https://api.mapbox.com/styles/v1/nvictorino/cj362h2d400032ro11ai417f1/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibnZpY3RvcmlubyIsImEiOiJsN2RXVkdvIn0.9fBuVYgA7oBG-9Yk4S-29A', {
+    L.tileLayer('https://api.mapbox.com/styles/v1/reliefweb/cj5jv8kvz0zt32rmlqjhfla7b/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoicmVsaWVmd2ViIiwiYSI6IldYR2ZuV3cifQ.eSPZMZWE6UyLtO0OH_-qrw', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       subdomains: ['a', 'b', 'c']
     }).addTo(map);
@@ -69,8 +80,8 @@
 
 
     function changeType(name) {
+      
       currentType = name;
-        
       $('.'+name).addClass('selected');
       $('.'+name).siblings().removeClass("selected");
       map.removeLayer(layerGroup1);
@@ -82,7 +93,6 @@
         var reached = countryData[i]["figures"][currentYear]["reached"];
         var funded = countryData[i]["figures"][currentYear]["funded"];
         var required = countryData[i]["figures"][currentYear]["required"];  
-        console.log(targeted/reached);
         var circleSize = countryData[i]["figures"][currentYear][currentType];
         var x_coor = countryData[i].longitude;
         var y_coor = countryData[i].latitude;
@@ -91,14 +101,20 @@
         var circle = L.circleMarker([y_coor, x_coor], {radius: circleSize});
         circle.addTo(layerGroup1);
         circle.bindPopup(
-          "<span class='popup-title'>"+label+"</span></b><strong>People in need</strong><br />"
-            + pin+"M<div class='popup-spacer'></div><strong>People targeted</strong><br />"
-            + targeted+"M<div class='popup-spacer'></div><strong>People reached</strong><br />"
-            + (Math.floor((reached/targeted)*100))+"%<br /><div class='bar-empty'><div class='bar-data' style='width:"+((reached/targeted)*160)+ "px'></div></div><div class='popup-spacer'></div><strong>Funding required</strong><br />"
-            + required+"M<div class='popup-spacer'></div><strong>Funding progress</strong> "
+          "<span class='popup-title'>"+label+"</span></b>People in need<br /><strong>"
+            + pin+" million</strong><div class='popup-spacer'></div>People targeted<br /><strong>"
+            + targeted+" million</strong><div class='popup-spacer'></div>People reached<br /><strong>"+reached+" million ("
+            + (Math.floor((reached/targeted)*100))+"% of targeted)</strong><br /><div class='bar-empty'><div class='bar-data' style='width:"+((reached/targeted)*160)+ "px'></div></div><hr>Funding required<br /><strong>US$ "
+            + required+" million</strong><div class='popup-spacer'></div><strong>Funding progress</strong> "
             + (Math.floor((funded/required)*100))+"%<br /><div class='bar-empty'><div class='bar-data' style='width:"+((funded/required)*160)+"px'></div></div>"
-          )
-        //.openPopup();
+          )//.openPopup();
+        circle.on('mouseover', function (e) {
+            this.openPopup();
+        });
+        circle.on('mouseout', function (e) {
+            this.closePopup();
+        });
+        
       };   
     }
 
